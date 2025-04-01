@@ -1,238 +1,131 @@
 <template>
-	<header class="fixed top-0 left-0 right-0 z-50 py-4 px-2">
-		<nav
-			class="p-4 px-6 mx-auto max-w-7xl rounded-3xl md:flex md:items-center shadow-xl relative bg-darkblue"
-			aria-label="Main navigation"
-		>
-			<div class="flex items-center justify-between md:hidden">
+	<header class="sticky top-0 left-0 right-0 z-50 bg-[#333333]">
+		<!-- Top Navigation -->
+		<div class="border-b border-gray-700">
+			<div class="container mx-auto px-4 flex justify-end py-2">
+				<nav class="flex gap-6 text-sm text-white/80">
+					<!-- <NuxtLink to="/news" class="hover:text-white transition-colors"
+						>NEWS / INSIGHTS</NuxtLink
+					> -->
+					<NuxtLink
+						to="/subcontractors"
+						class="hover:text-white transition-colors"
+						>SUBCONTRACTORS</NuxtLink
+					>
+					<NuxtLink to="/contact" class="hover:text-white transition-colors"
+						>CONTACT</NuxtLink
+					>
+				</nav>
+			</div>
+		</div>
+
+		<!-- Main Navigation -->
+		<div class="container mx-auto px-4 py-4">
+			<nav class="flex items-center justify-between">
+				<!-- Logo -->
 				<NuxtLink to="/" class="flex items-center" aria-label="Go to homepage">
-					<NuxtImg src="/" alt="PLR" class="w-10 h-10" />
+					<img
+						src="/images/jc_1.png"
+						alt="PC Construction"
+						class="w-14 h-auto"
+					/>
 				</NuxtLink>
 
+				<!-- Main Nav Items -->
+				<div class="hidden lg:flex items-center gap-8">
+					<NuxtLink
+						v-for="item in mainNavItems"
+						:key="item.to"
+						:to="item.to"
+						class="text-white font-medium hover:text-yellow-400 transition-colors uppercase"
+						:class="{ 'flex items-center gap-1': item.hasDropdown }"
+					>
+						{{ item.label }}
+						<Icon
+							v-if="item.hasDropdown"
+							name="heroicons:chevron-down"
+							class="w-4 h-4"
+						/>
+					</NuxtLink>
+					<button
+						class="bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition-colors"
+					>
+						<Icon name="heroicons:magnifying-glass" class="w-5 h-5" />
+					</button>
+				</div>
+
+				<!-- Mobile Menu Button -->
 				<button
 					type="button"
-					class="text-white/90 focus:outline-none rounded md:hidden"
-					:aria-expanded="showMenu"
-					aria-controls="main-navigation"
-					@click="toggleNavbar"
+					class="lg:hidden text-white p-2 focus:outline-none"
+					@click="toggleMobileMenu"
+					aria-label="Toggle menu"
 				>
-					<span class="sr-only">{{
-						showMenu ? 'Close menu' : 'Open menu'
-					}}</span>
-					<Icon
-						:name="showMenu ? 'heroicons:x-mark' : 'heroicons:bars-3'"
-						class="menu-icon transition-transform duration-300"
-						:class="{ 'rotate-180': showMenu }"
-						aria-hidden="true"
-					/>
-				</button>
-			</div>
-
-			<div class="hidden md:flex md:items-center md:justify-between md:w-full">
-				<NuxtLink
-					to="/"
-					class="flex items-center mr-8"
-					aria-label="Go to homepage"
-				>
-					<NuxtImg src="/" alt="PLR" class="w-10 h-10" />
-				</NuxtLink>
-
-				<div class="flex items-center gap-8 uppercase">
-					<template v-for="link in navigationLinks.slice(0, -1)" :key="link.to">
-						<div v-if="link.children" class="relative group">
-							<div class="flex items-center gap-1">
-								<NuxtLink
-									:to="link.to"
-									class="text-white/80 hover:text-white transition-colors duration-300 py-2"
-									:class="{ 'text-white': $route.path.startsWith(link.to) }"
-								>
-									{{ link.label }}
-								</NuxtLink>
-								<button
-									@click="toggleDropdown"
-									class="flex items-center text-white/80 hover:text-white transition-colors duration-300"
-								>
-									<Icon
-										name="heroicons:chevron-down"
-										class="w-4 h-4 transition-transform duration-300"
-										:class="{ 'rotate-180': showDropdown }"
-									/>
-								</button>
-							</div>
-							<div
-								v-show="showDropdown"
-								class="absolute top-full left-0 w-64 bg-darkblue rounded-lg shadow-lg py-2 mt-1"
-							>
-								<NuxtLink
-									v-for="child in link.children"
-									:key="child.to"
-									:to="child.to"
-									class="block px-4 py-2 text-white/80 hover:text-white hover:bg-royalblue/20 transition-colors duration-300"
-									@click="closeDropdown"
-								>
-									{{ child.label }}
-								</NuxtLink>
-							</div>
-						</div>
-						<NuxtLink
-							v-else
-							:to="link.to"
-							class="relative text-white/80 hover:text-white transition-colors duration-300 group py-2"
-							:class="{ 'text-white': $route.path === link.to }"
-						>
-							{{ link.label }}
-							<span
-								class="absolute bottom-0 left-0 w-0 h-0.5 bg-white transition-all duration-300 group-hover:w-full"
-								:class="{ 'w-full': $route.path === link.to }"
-							></span>
-						</NuxtLink>
-					</template>
-					<NuxtLink
-						:to="navigationLinks[navigationLinks.length - 1].to"
-						class="bg-electriclime text-darkblue px-6 py-2 rounded-lg hover:bg-electriclime/90 transition-colors font-medium ml-4"
-					>
-						{{ navigationLinks[navigationLinks.length - 1].label }}
-					</NuxtLink>
-				</div>
-			</div>
-
-			<Transition
-				enter-active-class="transition duration-300 ease-out"
-				enter-from-class="transform -translate-y-4 opacity-0"
-				enter-to-class="transform translate-y-0 opacity-100"
-				leave-active-class="transition duration-200 ease-in"
-				leave-from-class="transform translate-y-0 opacity-100"
-				leave-to-class="transform -translate-y-4 opacity-0"
-			>
-				<div
-					v-show="showMenu"
-					class="absolute top-full left-0 right-0 bg-darkblue mt-2 p-4 rounded-xl shadow-lg md:hidden z-50"
-				>
-					<div class="flex flex-col space-y-4">
-						<template v-for="link in navigationLinks" :key="link.to">
-							<template v-if="link.children">
-								<button
-									@click="toggleDropdown"
-									class="flex items-center justify-between text-white/80 hover:text-white transition-colors duration-300 w-full"
-								>
-									{{ link.label }}
-									<Icon
-										name="heroicons:chevron-down"
-										class="w-4 h-4 transition-transform duration-300"
-										:class="{ 'rotate-180': showDropdown }"
-									/>
-								</button>
-								<div v-show="showDropdown" class="pl-4 mt-2 space-y-2">
-									<NuxtLink
-										v-for="child in link.children"
-										:key="child.to"
-										:to="child.to"
-										class="block text-white/70 hover:text-white transition-colors duration-300"
-										@click="closeNavbar"
-									>
-										{{ child.label }}
-									</NuxtLink>
-								</div>
-							</template>
-							<NuxtLink
-								v-else
-								:to="link.to"
-								class="text-white/80 hover:text-white transition-colors duration-300"
-								@click="closeNavbar"
-							>
-								{{ link.label }}
-							</NuxtLink>
-						</template>
+					<div class="relative w-6 h-6">
+						<span
+							class="absolute block w-6 h-0.5 bg-white transform transition-all duration-300 ease-in-out"
+							:class="showMobileMenu ? 'rotate-45 top-3' : 'top-1'"
+						></span>
+						<span
+							class="absolute block w-6 h-0.5 bg-white top-3 transition-all duration-200"
+							:class="showMobileMenu ? 'opacity-0' : 'opacity-100'"
+						></span>
+						<span
+							class="absolute block w-6 h-0.5 bg-white transform transition-all duration-300 ease-in-out"
+							:class="showMobileMenu ? '-rotate-45 top-3' : 'top-5'"
+						></span>
 					</div>
+				</button>
+			</nav>
+		</div>
+
+		<!-- Mobile Menu -->
+		<Transition
+			enter-active-class="transition duration-200 ease-out"
+			enter-from-class="opacity-0 -translate-y-1"
+			enter-to-class="opacity-100 translate-y-0"
+			leave-active-class="transition duration-150 ease-in"
+			leave-from-class="opacity-100 translate-y-0"
+			leave-to-class="opacity-0 -translate-y-1"
+		>
+			<div
+				v-if="showMobileMenu"
+				class="lg:hidden bg-[#333333] border-t border-gray-700"
+			>
+				<div class="container mx-auto px-4 py-4">
+					<nav class="flex flex-col gap-4">
+						<NuxtLink
+							v-for="item in mainNavItems"
+							:key="item.to"
+							:to="item.to"
+							class="text-white hover:text-yellow-400 transition-colors uppercase"
+							@click="showMobileMenu = false"
+						>
+							{{ item.label }}
+						</NuxtLink>
+					</nav>
 				</div>
-			</Transition>
-		</nav>
+			</div>
+		</Transition>
 	</header>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref } from 'vue';
 
-const showMenu = ref(false);
-const showDropdown = ref(false);
+const showMobileMenu = ref(false);
 
-const navigationLinks = [
-	{ to: '/about', label: 'About' },
-	{
-		label: 'Services',
-		to: '/services',
-		children: [
-			{ to: '/services/linkedin-optimization', label: 'LinkedIn Optimization' },
-			{ to: '/services/resume-writing', label: 'Resume Writing' },
-			{ to: '/services/interview-coaching', label: 'Interview Coaching' },
-			{ to: '/services/job-search', label: 'Job Search Assistance' },
-			{ to: '/services/al-carte', label: 'Al Carte Services' },
-		],
-	},
-	// { to: '/packages', label: 'Packages' },
-	{ to: '/blog', label: 'Blog' },
-	{ to: '/contact', label: 'Contact' },
+const mainNavItems = [
+	{ label: 'About Us', to: '/about' },
+	{ label: 'Our Culture', to: '/culture' },
+	{ label: 'Our Work', to: '/work' },
+	{ label: 'Our Approach', to: '/approach' },
+	{ label: 'Careers', to: '/careers' },
 ];
 
-const toggleNavbar = () => (showMenu.value = !showMenu.value);
-const closeNavbar = () => (showMenu.value = false);
-const toggleDropdown = () => (showDropdown.value = !showDropdown.value);
-const closeDropdown = () => (showDropdown.value = false);
-
-// Close menu when clicking outside
-onMounted(() => {
-	document.addEventListener('click', (event) => {
-		const nav = document.querySelector('nav');
-		const dropdown = document.querySelector('.services-dropdown');
-		if (
-			nav &&
-			!nav.contains(event.target) &&
-			(showMenu.value || showDropdown.value)
-		) {
-			closeNavbar();
-			closeDropdown();
-		}
-	});
-});
-
-// Close menu on escape key
-onMounted(() => {
-	document.addEventListener('keydown', (event) => {
-		if (event.key === 'Escape' && showMenu.value) {
-			closeNavbar();
-		}
-	});
-});
-
-onMounted(() => {
-	if (typeof window !== 'undefined') {
-		// Wait for GSAP to be loaded
-		const checkGSAP = setInterval(() => {
-			if (window.gsap && window.ScrollTrigger) {
-				clearInterval(checkGSAP);
-
-				const gsap = window.gsap;
-				const ScrollTrigger = window.ScrollTrigger;
-
-				gsap.registerPlugin(ScrollTrigger);
-
-				gsap.to('.nav-bg', {
-					scrollTrigger: {
-						start: 'top top',
-						end: 99999,
-						toggleActions: 'play none none reverse',
-						onEnter: () => gsap.to('.nav-bg', { opacity: 1, duration: 0.3 }),
-						onLeaveBack: () =>
-							gsap.to('.nav-bg', { opacity: 0, duration: 0.3 }),
-					},
-				});
-			}
-		}, 100);
-
-		// Clear interval after 5 seconds to prevent infinite checking
-		setTimeout(() => clearInterval(checkGSAP), 5000);
-	}
-});
+const toggleMobileMenu = () => {
+	showMobileMenu.value = !showMobileMenu.value;
+};
 </script>
 
 <style scoped>
@@ -244,5 +137,10 @@ onMounted(() => {
 .nav-bg {
 	pointer-events: none;
 	z-index: -1;
+}
+
+/* Add smooth hover effect for menu button */
+button:hover span {
+	background-color: #ffd700;
 }
 </style>

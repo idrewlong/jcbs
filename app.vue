@@ -5,6 +5,7 @@
 			<NuxtPage />
 		</main>
 		<Footer />
+		<BackToTop />
 	</div>
 </template>
 
@@ -34,7 +35,6 @@ body {
 /* Section styles */
 .section {
 	width: 100%;
-	min-height: 100vh;
 	position: relative;
 }
 </style>
